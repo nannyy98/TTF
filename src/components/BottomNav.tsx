@@ -53,26 +53,21 @@ export const BottomNav = () => {
                       strokeWidth="2.2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      stroke={isActive ? '#E53E3E' : 'currentColor'}
                       className={cn(
                         "transition-all duration-200",
-                        isActive ? "stroke-red-500 dark:stroke-red-400" : "stroke-surface-400 dark:stroke-surface-500"
+                        !isActive && "text-surface-400 dark:text-surface-500"
                       )}
                     >
-                      <defs>
-                        <linearGradient id="logoGrad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
-                          <stop stopColor="#C9A24D" />
-                          <stop offset="1" stopColor="#8B6914" />
-                        </linearGradient>
-                      </defs>
-                      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="url(#logoGrad)" />
-                      <line x1="3" y1="6" x2="21" y2="6" stroke="url(#logoGrad)" />
-                      <path d="M16 10a4 4 0 01-8 0" stroke="url(#logoGrad)" />
+                      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                      <line x1="3" y1="6" x2="21" y2="6" />
+                      <path d="M16 10a4 4 0 01-8 0" />
                     </svg>
                   ) : (
                     <Icon
                       className="w-5 h-5 transition-all duration-200"
                       strokeWidth={isActive ? 2.5 : 1.8}
-                      style={isActive && isFavorites ? { fill: '#C9A24D', color: '#C9A24D' } : undefined}
+                      style={isActive && isFavorites ? { fill: '#E53E3E', color: '#E53E3E' } : undefined}
                     />
                   )}
                 </div>
