@@ -41,7 +41,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 this.setState({ hasError: false });
                 window.location.href = '/catalog';
               }}
-              className="bg-surface-900 text-white px-5 py-2.5 rounded-xl text-sm font-medium active:scale-95 transition"
+              className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium active:scale-95 transition"
             >
               Вернуться в каталог
             </button>

@@ -156,7 +156,7 @@ export const Profile = () => {
               <button
                 onClick={handleSaveProfile}
                 disabled={saving}
-                className="w-full bg-surface-900 hover:bg-surface-800 disabled:bg-surface-400 text-white py-2.5 rounded-xl font-semibold text-sm transition flex items-center justify-center gap-2"
+                className="w-full bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white py-2.5 rounded-xl font-semibold text-sm transition flex items-center justify-center gap-2"
               >
                 {saving && <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
                 {t('save_profile')}
@@ -389,7 +389,7 @@ export const Profile = () => {
           </button>
         </div>
 
-        <p className="text-center text-xs text-surface-400 dark:text-surface-600">StyleTech Shop v1.0</p>
+        <p className="text-center text-xs text-surface-400 dark:text-surface-600">KUPI Shop v1.0</p>
       </div>
     </Layout>
   );

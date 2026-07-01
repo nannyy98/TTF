@@ -85,31 +85,31 @@
   }
 
   .gradient-brand {
-    background: #111205;
+    background: #C53030;
   }
 
   .gradient-brand-reverse {
-    background: #222222;
+    background: #E53E3E;
   }
 
   .gradient-navy {
-    background: #111205;
+    background: #C53030;
   }
 
   .gradient-hero {
-    background: linear-gradient(160deg, #111205 0%, #222222 40%, #333333 70%, #555555 100%);
+    background: linear-gradient(160deg, #C53030 0%, #E53E3E 40%, #9B2C2C 70%, #631616 100%);
   }
 
   .gradient-warm {
-    background: linear-gradient(135deg, #FFFFFF 0%, #F7F7F7 100%);
+    background: linear-gradient(135deg, #FFFFFF 0%, #FEF2F2 100%);
   }
 
   .gradient-cool {
-    background: #222222;
+    background: #E53E3E;
   }
 
   .text-gradient-brand {
-    background: linear-gradient(135deg, #111205, #555555);
+    background: linear-gradient(135deg, #E53E3E, #9B2C2C);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -259,15 +259,15 @@
 @layer components {
   .btn-brand {
     @apply relative overflow-hidden font-semibold transition-all duration-200;
-    @apply bg-surface-900 text-white hover:bg-surface-800 active:bg-surface-950;
+    @apply bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800;
     @apply shadow-sm;
     @apply active:scale-[0.97];
   }
 
   .btn-brand-outline {
     @apply relative overflow-hidden font-semibold transition-all duration-200;
-    @apply bg-transparent text-surface-900 border-2 border-surface-900;
-    @apply hover:bg-surface-900 hover:text-white;
+    @apply bg-transparent text-brand-600 border-2 border-brand-600;
+    @apply hover:bg-brand-600 hover:text-white;
     @apply active:scale-[0.97];
   }
 

@@ -107,7 +107,7 @@ export const Home = () => {
             </div>
 
             <p className="text-center text-surface-500 text-2xs mt-8">
-              StyleTech Shop v1.0
+              KUPI Shop v1.0
             </p>
           </div>
         </div>

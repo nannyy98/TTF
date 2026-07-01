@@ -22,7 +22,7 @@ export const NotFound = () => {
         </p>
         <Link
           to="/"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-900 hover:bg-surface-800 text-white text-sm font-semibold transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           {language === 'ru' ? 'На главную' : 'Bosh sahifa'}

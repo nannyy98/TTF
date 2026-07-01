@@ -224,7 +224,7 @@ export const Checkout = () => {
           <div className="w-full max-w-xs space-y-3">
             <button
               onClick={() => navigate('/orders')}
-              className="w-full py-3.5 rounded-xl bg-surface-900 hover:bg-surface-800 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2"
             >
               <ShoppingBag className="w-4 h-4" />
               {language === 'ru' ? 'Мои заказы' : 'Buyurtmalarim'}
@@ -335,7 +335,7 @@ export const Checkout = () => {
                   }
                   setStep('delivery');
                 }}
-                className="w-full py-3.5 rounded-xl bg-surface-900 hover:bg-surface-800 active:scale-[0.98] text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-[0.98] text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
               >
                 {language === 'ru' ? 'Далее' : 'Keyingi'}
                 <ChevronRight className="w-4 h-4" />
@@ -516,7 +516,7 @@ export const Checkout = () => {
                   }
                   setStep('payment');
                 }}
-                className="w-full py-3.5 rounded-xl bg-surface-900 hover:bg-surface-800 active:scale-[0.98] text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-[0.98] text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
               >
                 {language === 'ru' ? 'Далее' : 'Keyingi'}
                 <ChevronRight className="w-4 h-4" />
@@ -630,7 +630,7 @@ export const Checkout = () => {
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="w-full py-4 rounded-xl bg-surface-900 hover:bg-surface-800 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

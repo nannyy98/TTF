@@ -213,7 +213,7 @@ export const Orders = () => {
           </p>
           <button
             onClick={() => navigate('/catalog')}
-            className="bg-surface-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-surface-800 transition-colors"
+            className="bg-brand-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-700 transition-colors"
           >
             {t('catalog')}
           </button>
@@ -385,7 +385,7 @@ export const Orders = () => {
                         toast.error(language === 'ru' ? 'Товары больше не доступны' : 'Mahsulotlar mavjud emas');
                       }
                     }}
-                    className="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-surface-900 hover:bg-surface-800 text-white text-sm font-medium transition"
+                    className="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition"
                   >
                     <ShoppingBag className="w-4 h-4" />
                     {language === 'ru' ? 'Заказать снова' : 'Qaytadan buyurtma berish'}

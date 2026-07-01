@@ -58,7 +58,7 @@ export const AdminLogin = () => {
               Вход в панель управления
             </h1>
             <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">
-              StyleTech Shop — Административная панель
+              KUPI Shop — Административная панель
             </p>
           </div>
 
@@ -115,7 +115,7 @@ export const AdminLogin = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-surface-900 hover:bg-surface-800 active:bg-surface-950 text-white font-semibold py-3 rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+                className="w-full flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold py-3 rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
               >
                 {loading && (
                   <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />

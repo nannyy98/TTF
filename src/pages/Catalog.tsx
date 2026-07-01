@@ -121,7 +121,7 @@ export const Catalog = () => {
           >
             <SlidersHorizontal className="w-4 h-4" />
             {activeFiltersCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-surface-900 text-white text-2xs rounded-full w-4 h-4 flex items-center justify-center font-bold animate-bounce-in">
+              <span className="absolute -top-1 -right-1 bg-brand-600 text-white text-2xs rounded-full w-4 h-4 flex items-center justify-center font-bold animate-bounce-in">
                 {activeFiltersCount}
               </span>
             )}
@@ -136,7 +136,7 @@ export const Catalog = () => {
               className={cn(
                 "px-4 py-2 rounded-xl whitespace-nowrap text-xs font-semibold transition-all duration-200",
                 !selectedCategory
-                  ? 'bg-surface-900 text-white'
+                  ? 'bg-brand-600 text-white'
                   : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'
               )}
             >
@@ -149,7 +149,7 @@ export const Catalog = () => {
                 className={cn(
                   "px-4 py-2 rounded-xl whitespace-nowrap text-xs font-semibold transition-all duration-200",
                   selectedCategory === category.id
-                    ? 'bg-surface-900 text-white'
+                    ? 'bg-brand-600 text-white'
                     : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'
                 )}
               >
@@ -236,7 +236,7 @@ export const Catalog = () => {
                       className={cn(
                         "px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all duration-200",
                         selectedSizes.includes(size)
-                          ? 'bg-surface-900 text-white border-surface-900'
+                          ? 'bg-brand-600 text-white border-brand-600'
                           : 'bg-white dark:bg-surface-800 text-surface-600 dark:text-surface-300 border-surface-200 dark:border-surface-600 hover:border-surface-400'
                       )}
                     >
@@ -357,7 +357,7 @@ export const Catalog = () => {
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-24 right-4 z-40 w-11 h-11 rounded-full bg-surface-900 text-white shadow-lg flex items-center justify-center transition-all duration-200 hover:bg-surface-800 active:scale-90 animate-fade-in"
+          className="fixed bottom-24 right-4 z-40 w-11 h-11 rounded-full bg-brand-600 text-white shadow-lg flex items-center justify-center transition-all duration-200 hover:bg-brand-700 active:scale-90 animate-fade-in"
         >
           <ArrowUp className="w-5 h-5" />
         </button>

@@ -77,7 +77,7 @@ export const BottomNav = () => {
                   )}
                 </div>
                 {badge != null && badge > 0 && (
-                  <span className="absolute -top-1 -right-1.5 min-w-[16px] h-4 flex items-center justify-center px-1 bg-surface-900 text-white text-2xs font-bold rounded-full animate-bounce-in">
+                  <span className="absolute -top-1 -right-1.5 min-w-[16px] h-4 flex items-center justify-center px-1 bg-brand-600 text-white text-2xs font-bold rounded-full animate-bounce-in">
                     {badge}
                   </span>
                 )}
@@ -89,7 +89,7 @@ export const BottomNav = () => {
                 {label}
               </span>
               {isActive && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-surface-900 rounded-full" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-brand-600 rounded-full" />
               )}
             </Link>
           );

@@ -288,7 +288,7 @@ export const AdminProducts = () => {
               onClick={() => setStockView(!stockView)}
               className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl border transition ${
                 stockView
-                  ? 'bg-surface-900 text-white border-surface-900'
+                  ? 'bg-brand-600 text-white border-brand-600'
                   : 'bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-300 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-700'
               }`}
             >
@@ -311,7 +311,7 @@ export const AdminProducts = () => {
 
             <button
               onClick={() => navigate('/admin/products/new')}
-              className="flex items-center gap-2 bg-surface-900 hover:bg-surface-800 text-white text-sm font-semibold px-4 py-2 rounded-xl transition shadow-sm"
+              className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition shadow-sm"
             >
               <Plus className="w-4 h-4" />
               <span>Добавить</span>
@@ -347,7 +347,7 @@ export const AdminProducts = () => {
             <p className="text-surface-500 dark:text-surface-400 mb-4">Товаров пока нет</p>
             <button
               onClick={() => navigate('/admin/products/new')}
-              className="inline-flex items-center gap-2 bg-surface-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-surface-800 transition"
+              className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition"
             >
               <Plus className="w-4 h-4" />
               Добавить первый товар

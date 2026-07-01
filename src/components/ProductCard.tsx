@@ -96,7 +96,7 @@ export const ProductCard = memo(({ product, language, favoriteIds: favoriteIdsPr
             className={`absolute bottom-2 right-2 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 active:scale-90 ${
               justAdded
                 ? 'bg-green-500 text-white'
-                : 'bg-surface-900 text-white group-hover:bg-surface-800 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:translate-y-2 sm:group-hover:translate-y-0'
+                : 'bg-brand-600 text-white group-hover:bg-brand-700 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:translate-y-2 sm:group-hover:translate-y-0'
             }`}
           >
             {justAdded ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}

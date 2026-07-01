@@ -17,7 +17,7 @@ export const Logo = ({ size = 'md', variant = 'full', className = '' }: LogoProp
   return (
     <div className={`flex items-center gap-2.5 ${className}`}>
       <div
-        className="bg-surface-900 dark:bg-white rounded-xl flex items-center justify-center flex-shrink-0"
+        className="bg-brand-600 rounded-xl flex items-center justify-center flex-shrink-0"
         style={{ width: s.icon, height: s.icon }}
       >
         <svg
@@ -29,7 +29,7 @@ export const Logo = ({ size = 'md', variant = 'full', className = '' }: LogoProp
           strokeWidth="2.2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="dark:[&]:stroke-surface-900"
+
         >
           <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
           <line x1="3" y1="6" x2="21" y2="6" />
@@ -39,11 +39,11 @@ export const Logo = ({ size = 'md', variant = 'full', className = '' }: LogoProp
       {variant !== 'icon' && (
         <div className="flex flex-col leading-none">
           <span className={`font-bold tracking-tight text-surface-900 dark:text-white ${s.text}`}>
-            STYLETECH
+            KUPI
           </span>
           {s.sub && (
             <span className="text-2xs font-medium text-surface-400 dark:text-surface-500 tracking-widest uppercase mt-0.5">
-              Shop
+              Market
             </span>
           )}
         </div>

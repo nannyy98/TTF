@@ -206,7 +206,7 @@ export const AdminDashboard = () => {
               <ShoppingBag className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-sm font-bold text-surface-900 dark:text-white leading-none">StyleTech Shop</p>
+              <p className="text-sm font-bold text-surface-900 dark:text-white leading-none">KUPI Shop</p>
               <p className="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Панель управления</p>
             </div>
           </div>
@@ -298,7 +298,7 @@ export const AdminDashboard = () => {
                 onClick={() => setPeriod(p)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                   period === p
-                    ? 'bg-surface-900 text-white'
+                    ? 'bg-brand-600 text-white'
                     : 'text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'
                 }`}
               >
@@ -379,12 +379,12 @@ export const AdminDashboard = () => {
                   const label = new Date(day.date).toLocaleDateString('ru-RU', dateFormat);
                   return (
                     <div key={day.date} className="flex-1 flex flex-col items-center gap-1 group relative">
-                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-900 text-white text-xs px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-brand-600 text-white text-xs px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
                         {formatPrice(day.revenue)} · {day.orders} заказ.
                       </div>
                       <div className="w-full flex items-end" style={{ height: '100px' }}>
                         <div
-                          className={`w-full rounded-t-lg transition-all duration-300 ${day.revenue > 0 ? 'bg-surface-900 hover:bg-surface-800' : 'bg-surface-100 dark:bg-surface-700'}`}
+                          className={`w-full rounded-t-lg transition-all duration-300 ${day.revenue > 0 ? 'bg-brand-600 hover:bg-brand-700' : 'bg-surface-100 dark:bg-surface-700'}`}
                           style={{ height: `${Math.max(pct, pct > 0 ? 4 : 2)}%` }}
                         />
                       </div>
@@ -479,7 +479,7 @@ export const AdminDashboard = () => {
                 {stats.topProducts.map((p, i) => (
                   <div key={i} className="flex items-center gap-3 px-5 py-3">
                     <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${
-                      i === 0 ? 'bg-surface-900 text-white'
+                      i === 0 ? 'bg-brand-600 text-white'
                       : i === 1 ? 'bg-surface-200 dark:bg-surface-600 text-surface-700 dark:text-surface-200'
                       : i === 2 ? 'bg-surface-300 text-surface-800'
                       : 'bg-surface-100 dark:bg-surface-700 text-surface-500 dark:text-surface-400'

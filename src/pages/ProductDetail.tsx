@@ -373,7 +373,7 @@ export const ProductDetail = () => {
                     onClick={() => setSelectedSize(size)}
                     className={`min-w-[44px] h-11 px-4 rounded-xl text-sm font-semibold border transition-all duration-150 active:scale-95 ${
                       selectedSize === size
-                        ? 'bg-surface-900 text-white border-surface-900'
+                        ? 'bg-brand-600 text-white border-brand-600'
                         : 'bg-white dark:bg-surface-700 text-surface-900 dark:text-white border-surface-200 dark:border-surface-600'
                     }`}
                   >
@@ -673,7 +673,7 @@ export const ProductDetail = () => {
                 <button
                   onClick={handleSubmitReview}
                   disabled={!reviewName.trim() || reviewSubmitting}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-surface-900 hover:bg-surface-800 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
                 >
                   {reviewSubmitting ? (
                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -719,7 +719,7 @@ export const ProductDetail = () => {
             className={`flex-1 h-12 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:cursor-not-allowed ${
               product.stock === 0
                 ? 'bg-surface-300 dark:bg-surface-600 text-white'
-                : 'bg-surface-900 text-white hover:bg-surface-800'
+                : 'bg-brand-600 text-white hover:bg-brand-700'
             }`}
           >
             <ShoppingCart className="w-5 h-5" />

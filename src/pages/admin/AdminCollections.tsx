@@ -224,7 +224,7 @@ export const AdminCollections = () => {
           </div>
           <button
             onClick={openCreate}
-            className="flex items-center gap-2 px-4 py-2.5 bg-surface-900 hover:bg-surface-800 text-white rounded-xl font-medium transition-colors text-sm shadow-sm"
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-medium transition-colors text-sm shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Добавить
@@ -375,7 +375,7 @@ export const AdminCollections = () => {
               <button
                 onClick={handleSave}
                 disabled={saving || !form.name_ru.trim()}
-                className="flex-1 py-2.5 rounded-xl bg-surface-900 hover:bg-surface-800 disabled:opacity-50 text-white text-sm font-medium transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-medium transition-colors"
               >
                 {saving ? 'Сохранение...' : editingId ? 'Сохранить' : 'Создать'}
               </button>
@@ -458,7 +458,7 @@ export const AdminCollections = () => {
               </button>
               <button
                 onClick={saveProductPicker}
-                className="flex-1 py-2.5 rounded-xl bg-surface-900 hover:bg-surface-800 text-white text-sm font-medium transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors"
               >
                 Сохранить ({pickerProductIds.length})
               </button>

@@ -12,7 +12,7 @@ export const Header = () => {
         <Link to="/catalog" className="flex items-center gap-2">
           <Logo size="sm" variant="icon" />
           <span className="text-sm font-bold tracking-widest text-surface-900 dark:text-white uppercase">
-            StyleTech
+            KUPI
           </span>
         </Link>
 
@@ -23,7 +23,7 @@ export const Header = () => {
           >
             <ShoppingBag className="w-5 h-5 text-surface-600 dark:text-surface-300" />
             {totalItems > 0 && (
-              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-surface-900 text-white text-2xs font-bold rounded-full animate-bounce-in">
+              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-brand-600 text-white text-2xs font-bold rounded-full animate-bounce-in">
                 {totalItems}
               </span>
             )}

@@ -126,7 +126,7 @@ export const Register = () => {
             <button
               type="submit"
               disabled={saving}
-              className="w-full bg-surface-900 hover:bg-surface-800 disabled:bg-surface-400 text-white py-4 rounded-2xl font-semibold text-base transition-all flex items-center justify-center gap-2"
+              className="w-full bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white py-4 rounded-2xl font-semibold text-base transition-all flex items-center justify-center gap-2"
             >
               {saving && <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
               {language === 'ru' ? 'Продолжить' : 'Davom etish'}

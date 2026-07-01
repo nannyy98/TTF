@@ -19,7 +19,7 @@ const STATUS_COLORS: Record<Return['status'], string> = {
   pending: 'bg-warning/10 text-warning',
   approved: 'bg-success/10 text-success',
   rejected: 'bg-danger/10 text-danger',
-  refunded: 'bg-surface-900 text-white',
+  refunded: 'bg-brand-600 text-white',
 };
 
 export const AdminReturns = () => {

@@ -43,8 +43,8 @@ export const AboutUs = () => {
             </div>
             <p className="text-sm text-surface-500 dark:text-surface-400 leading-relaxed max-w-sm mx-auto">
               {language === 'ru'
-                ? 'StyleTech Shop — ваш надёжный магазин модной одежды и аксессуаров с доставкой по всему Узбекистану. Мы предлагаем качественные товары по доступным ценам.'
-                : "StyleTech Shop — O'zbekiston bo'ylab yetkazib berish bilan moda kiyimlar va aksessuarlar do'koni. Biz sifatli mahsulotlarni mavjud narxlarda taklif qilamiz."}
+                ? 'KUPI Shop — ваш надёжный магазин модной одежды и аксессуаров с доставкой по всему Узбекистану. Мы предлагаем качественные товары по доступным ценам.'
+                : "KUPI Shop — O'zbekiston bo'ylab yetkazib berish bilan moda kiyimlar va aksessuarlar do'koni. Biz sifatli mahsulotlarni mavjud narxlarda taklif qilamiz."}
             </p>
           </div>
 
@@ -77,7 +77,7 @@ export const AboutUs = () => {
           </div>
 
           {/* Mission */}
-          <div className="bg-surface-900 rounded-2xl p-5 text-white">
+          <div className="bg-brand-600 rounded-2xl p-5 text-white">
             <div className="flex items-center gap-2 mb-3">
               <Award className="w-5 h-5" />
               <h3 className="font-bold text-sm">

@@ -1,6 +1,6 @@
 export const translations = {
   ru: {
-    app_name: 'StyleTech Shop',
+    app_name: 'KUPI Shop',
     welcome: 'Добро пожаловать',
     select_language: 'Выберите язык',
     catalog: 'Каталог',
@@ -128,7 +128,7 @@ export const translations = {
     items_count: 'товар(ов)',
   },
   uz: {
-    app_name: 'StyleTech Shop',
+    app_name: 'KUPI Shop',
     welcome: 'Xush kelibsiz',
     select_language: 'Tilni tanlang',
     catalog: 'Katalog',

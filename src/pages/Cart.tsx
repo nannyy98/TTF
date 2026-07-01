@@ -55,7 +55,7 @@ export const Cart = () => {
           </p>
           <button
             onClick={() => navigate('/catalog')}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-900 hover:bg-surface-800 text-white text-sm font-semibold transition-colors"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-colors"
           >
             {language === 'ru' ? 'Перейти в каталог' : "Katalogga o'tish"}
           </button>
@@ -206,7 +206,7 @@ export const Cart = () => {
           {/* Checkout button */}
           <button
             onClick={() => navigate('/checkout')}
-            className="w-full py-3.5 rounded-xl bg-surface-900 hover:bg-surface-800 active:scale-[0.98] text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-[0.98] text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
           >
             {language === 'ru' ? 'Оформить заказ' : 'Buyurtma berish'}
           </button>

@@ -60,7 +60,7 @@ export const NotificationCenter = () => {
                   }`}
                 >
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                    notification.is_read ? 'bg-surface-100 dark:bg-surface-700' : 'bg-surface-900 text-white'
+                    notification.is_read ? 'bg-surface-100 dark:bg-surface-700' : 'bg-brand-600 text-white'
                   }`}>
                     <Icon className="w-4 h-4" />
                   </div>
@@ -74,7 +74,7 @@ export const NotificationCenter = () => {
                     </p>
                   </div>
                   {!notification.is_read && (
-                    <div className="w-2 h-2 rounded-full bg-surface-900 flex-shrink-0 mt-2" />
+                    <div className="w-2 h-2 rounded-full bg-brand-600 flex-shrink-0 mt-2" />
                   )}
                 </button>
               );

@@ -303,7 +303,7 @@ export const AdminProductForm = () => {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 bg-surface-900 hover:bg-surface-800 disabled:bg-surface-400 text-white text-sm font-semibold px-4 py-2 rounded-xl transition shadow-sm"
+            className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white text-sm font-semibold px-4 py-2 rounded-xl transition shadow-sm"
           >
             <Save className="w-4 h-4" />
             {saving ? 'Сохранение...' : 'Сохранить'}
@@ -452,7 +452,7 @@ export const AdminProductForm = () => {
             <button
               onClick={addImage}
               disabled={form.images.length >= 6 || uploading}
-              className="px-4 py-2.5 bg-surface-900 hover:bg-surface-800 text-white rounded-xl text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -513,7 +513,7 @@ export const AdminProductForm = () => {
             />
             <button
               onClick={addSize}
-              className="px-4 py-2.5 bg-surface-900 hover:bg-surface-800 text-white rounded-xl text-sm font-medium transition"
+              className="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-medium transition"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -554,7 +554,7 @@ export const AdminProductForm = () => {
             />
             <button
               onClick={addColor}
-              className="px-4 py-2.5 bg-surface-900 hover:bg-surface-800 text-white rounded-xl text-sm font-medium transition"
+              className="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-medium transition"
             >
               <Plus className="w-4 h-4" />
             </button>

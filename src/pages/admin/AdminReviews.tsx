@@ -139,7 +139,7 @@ export const AdminReviews = () => {
               onClick={() => setFilter(f.key)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                 filter === f.key
-                  ? 'bg-surface-900 text-white'
+                  ? 'bg-brand-600 text-white'
                   : 'bg-white dark:bg-surface-800 text-surface-600 dark:text-surface-400 border border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-700'
               }`}
             >
@@ -298,7 +298,7 @@ export const AdminReviews = () => {
                         <button
                           onClick={() => handleReply(review.id)}
                           disabled={!replyText.trim()}
-                          className="px-3 py-1.5 rounded-lg bg-surface-900 hover:bg-surface-800 disabled:opacity-50 text-white text-xs font-medium transition-colors"
+                          className="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-xs font-medium transition-colors"
                         >
                           {review.admin_reply ? 'Обновить ответ' : 'Отправить ответ'}
                         </button>

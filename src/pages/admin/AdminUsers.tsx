@@ -322,7 +322,7 @@ export const AdminUsers = () => {
           {tab === 'admins' && (
             <button
               onClick={openCreate}
-              className="flex items-center gap-2 bg-surface-900 hover:bg-surface-800 text-white text-sm font-semibold px-4 py-2 rounded-xl transition shadow-sm"
+              className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition shadow-sm"
             >
               <Plus className="w-4 h-4" />
               <span>Добавить</span>
@@ -429,7 +429,7 @@ export const AdminUsers = () => {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 flex items-center justify-center gap-2 bg-surface-900 hover:bg-surface-800 text-white font-semibold py-2.5 rounded-xl transition disabled:opacity-60 text-sm"
+                  className="flex-1 flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-xl transition disabled:opacity-60 text-sm"
                 >
                   {saving && <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
                   {editing ? 'Сохранить' : 'Создать'}
@@ -599,7 +599,7 @@ export const AdminUsers = () => {
                 <button
                   onClick={handleSendMessage}
                   disabled={sendingMessage || !messageText.trim()}
-                  className="flex-1 flex items-center justify-center gap-2 bg-surface-900 hover:bg-surface-800 text-white font-semibold py-2.5 rounded-xl transition disabled:opacity-60 text-sm"
+                  className="flex-1 flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-xl transition disabled:opacity-60 text-sm"
                 >
                   {sendingMessage ? (
                     <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
@@ -636,14 +636,14 @@ export const AdminUsers = () => {
         <div className="flex gap-2 mb-6">
           <button
             onClick={() => setTab('admins')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition ${tab === 'admins' ? 'bg-surface-900 text-white' : 'bg-white dark:bg-surface-800 text-surface-600 dark:text-surface-400 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-700'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition ${tab === 'admins' ? 'bg-brand-600 text-white' : 'bg-white dark:bg-surface-800 text-surface-600 dark:text-surface-400 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-700'}`}
           >
             <Shield className="w-4 h-4" />
             Сотрудники панели
           </button>
           <button
             onClick={() => setTab('telegram')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition ${tab === 'telegram' ? 'bg-surface-900 text-white' : 'bg-white dark:bg-surface-800 text-surface-600 dark:text-surface-400 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-700'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition ${tab === 'telegram' ? 'bg-brand-600 text-white' : 'bg-white dark:bg-surface-800 text-surface-600 dark:text-surface-400 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-700'}`}
           >
             <Users className="w-4 h-4" />
             Покупатели
@@ -789,7 +789,7 @@ export const AdminUsers = () => {
                           </button>
                           <button
                             onClick={() => setMessageModal({ telegramId: u.telegram_id, firstName: u.first_name })}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-900 hover:bg-surface-800 text-white text-xs font-medium transition"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium transition"
                           >
                             <Send className="w-3 h-3" />
                             Написать
@@ -835,7 +835,7 @@ export const AdminUsers = () => {
                           onClick={() => setUsersPage(pageNum)}
                           className={`w-8 h-8 rounded-lg text-xs font-semibold transition ${
                             usersPage === pageNum
-                              ? 'bg-surface-900 text-white'
+                              ? 'bg-brand-600 text-white'
                               : 'text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'
                           }`}
                         >

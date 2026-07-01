@@ -41,13 +41,13 @@ export const OrderTimeline = ({ status, statusHistory, language }: OrderTimeline
             <div className="flex flex-col items-center">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
                 isCompleted
-                  ? 'bg-surface-900 text-white'
+                  ? 'bg-brand-600 text-white'
                   : 'bg-surface-100 dark:bg-surface-700 text-surface-400'
               } ${isCurrent ? 'ring-2 ring-surface-900/20 ring-offset-2' : ''}`}>
                 <Icon className="w-4 h-4" />
               </div>
               {idx < STATUS_STEPS.length - 1 && (
-                <div className={`w-0.5 h-8 ${idx < currentIdx ? 'bg-surface-900' : 'bg-surface-200 dark:bg-surface-600'}`} />
+                <div className={`w-0.5 h-8 ${idx < currentIdx ? 'bg-brand-600' : 'bg-surface-200 dark:bg-surface-600'}`} />
               )}
             </div>
             <div className="pb-6 pt-1">
