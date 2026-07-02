@@ -18,9 +18,9 @@ export const orderQueries = {
 
   getByTelegramUserId: async (telegramUserId: number) => {
     if (!isSupabaseConfigured) { await delay(); return mockOrders; }
-    const { data, error } = await supabase.from('orders').select('*').eq('telegram_user_id', telegramUserId).order('created_at', { ascending: false }).limit(50);
+    const { data, error } = await supabase.rpc('get_client_orders', { p_telegram_user_id: telegramUserId });
     if (error) throw error;
-    return data;
+    return data ?? [];
   },
 
   getById: async (id: string) => {

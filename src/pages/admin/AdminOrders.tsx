@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ChevronDown, Clock, User, MapPin, Package, History, Inbox, Hourglass, Archive } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Clock, User, MapPin, Package, History, Inbox, Hourglass, Archive, Search, Eye, EyeOff } from 'lucide-react';
 import { Database, type StatusHistoryEntry, type CustomerInfo, type OrderItem } from '../../lib/supabase';
 import { getCurrentAdmin, ROLE_LABELS } from '../../lib/auth';
 import { formatPrice } from '../../lib/utils';
@@ -9,7 +9,11 @@ import { ORDER_STATUSES, getStatusInfo } from '../../lib/orderStatuses';
 import { adminQueries } from '../../lib/adminApi';
 import { auditLogQueries } from '../../lib/supabase/queries';
 
-type Order = Database['public']['Tables']['orders']['Row'];
+type Order = Database['public']['Tables']['orders']['Row'] & {
+  visible_to_client?: boolean;
+  archived_at?: string | null;
+  cancellation_reason?: string | null;
+};
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString('ru-RU', {
@@ -17,26 +21,28 @@ const formatDate = (iso: string) =>
     hour: '2-digit', minute: '2-digit',
   });
 
-const StatusBadge = ({ status }: { status: string }) => {
+const StatusBadge = ({ status, archived }: { status: string; archived?: boolean }) => {
   const info = getStatusInfo(status);
   return (
-    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${info.color}`}>
+    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${info.color} ${archived ? 'opacity-70' : ''}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${info.dot}`} />
       {info.label_ru}
     </span>
   );
 };
 
-type TabType = 'new' | 'pending' | 'history';
+type TabType = 'new' | 'pending' | 'history' | 'archived';
 
 export const AdminOrders = () => {
   const admin = getCurrentAdmin();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [historyId, setHistoryId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('new');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [clientSearch, setClientSearch] = useState('');
 
   useEffect(() => {
     loadOrders();
@@ -46,7 +52,9 @@ export const AdminOrders = () => {
     try {
       setLoading(true);
       const data = await adminQueries.getOrders();
-      setOrders(data ?? []);
+      const ordersData = (data ?? []) as Order[];
+      setAllOrders(ordersData);
+      setOrders(ordersData);
     } catch {
       toast.error('Не удалось загрузить заказы.');
     } finally {
@@ -64,9 +72,15 @@ export const AdminOrders = () => {
         admin?.first_name ?? 'Admin'
       );
 
+      const updated = updatedOrder as Order;
+      setAllOrders((prev) =>
+        prev.map((o) =>
+          o.id === orderId ? { ...o, ...updated } : o
+        )
+      );
       setOrders((prev) =>
         prev.map((o) =>
-          o.id === orderId ? { ...o, ...updatedOrder } : o
+          o.id === orderId ? { ...o, ...updated } : o
         )
       );
       const label = getStatusInfo(newStatus).label_ru;
@@ -86,23 +100,38 @@ export const AdminOrders = () => {
     }
   };
 
-  const { newOrders, pendingOrders, historyOrders, counts } = useMemo(() => {
-    const newOrders = orders.filter(o => o.status === 'new');
-    const pendingOrders = orders.filter(o => ['processing', 'assembling', 'assembled', 'shipping', 'paid', 'shipped'].includes(o.status ?? ''));
-    const historyOrders = orders.filter(o => ['delivered', 'cancelled', 'returned', 'return_requested'].includes(o.status ?? ''));
+  const { newOrders, pendingOrders, historyOrders, archivedOrders, counts } = useMemo(() => {
+    const filtered = clientSearch.trim()
+      ? allOrders.filter((o) => {
+          const q = clientSearch.toLowerCase();
+          const idMatch = o.id.toLowerCase().includes(q);
+          const telegramMatch = String(o.telegram_user_id).includes(q);
+          const info = o.customer_info as CustomerInfo | null;
+          const nameMatch = info?.name?.toLowerCase().includes(q) ?? false;
+          const phoneMatch = info?.phone?.includes(q) ?? false;
+          return idMatch || telegramMatch || nameMatch || phoneMatch;
+        })
+      : allOrders;
+
+    const newOrders = filtered.filter(o => o.status === 'new');
+    const pendingOrders = filtered.filter(o => ['processing', 'assembling', 'assembled', 'shipping', 'paid', 'shipped'].includes(o.status ?? ''));
+    const historyOrders = filtered.filter(o => ['delivered', 'cancelled', 'returned', 'return_requested'].includes(o.status ?? '') && !o.archived_at);
+    const archivedOrders = filtered.filter(o => o.archived_at != null || o.visible_to_client === false);
     return {
       newOrders,
       pendingOrders,
       historyOrders,
+      archivedOrders,
       counts: {
         new: newOrders.length,
         pending: pendingOrders.length,
         history: historyOrders.length,
+        archived: archivedOrders.length,
       },
     };
-  }, [orders]);
+  }, [allOrders, clientSearch]);
 
-  const displayedOrders = activeTab === 'new' ? newOrders : activeTab === 'pending' ? pendingOrders : historyOrders;
+  const displayedOrders = activeTab === 'new' ? newOrders : activeTab === 'pending' ? pendingOrders : activeTab === 'history' ? historyOrders : archivedOrders;
 
   if (!admin) return null;
 
@@ -136,8 +165,22 @@ export const AdminOrders = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        {/* Search by client */}
+        <div className="mb-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
+            <input
+              type="text"
+              value={clientSearch}
+              onChange={(e) => setClientSearch(e.target.value)}
+              placeholder="Поиск по номеру, Telegram ID, имени или телефону клиента..."
+              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-surface-900"
+            />
+          </div>
+        </div>
+
         {/* Tab Navigation */}
-        <div className="mb-5 flex gap-2">
+        <div className="mb-5 flex gap-2 flex-wrap">
           <button
             onClick={() => setActiveTab('new')}
             className={`flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl transition ${
@@ -169,7 +212,18 @@ export const AdminOrders = () => {
             }`}
           >
             <Archive className="w-4 h-4" />
-            История {counts.history > 0 && <span className="ml-1 px-1.5 py-0.5 bg-white/20 dark:bg-surface-900/20 rounded-full text-[10px]">{counts.history}</span>}
+            Завершённые {counts.history > 0 && <span className="ml-1 px-1.5 py-0.5 bg-white/20 dark:bg-surface-900/20 rounded-full text-[10px]">{counts.history}</span>}
+          </button>
+          <button
+            onClick={() => setActiveTab('archived')}
+            className={`flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl transition ${
+              activeTab === 'archived'
+                ? 'bg-surface-900 dark:bg-white text-white dark:text-surface-900'
+                : 'bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-700'
+            }`}
+          >
+            <EyeOff className="w-4 h-4" />
+            Архив {counts.archived > 0 && <span className="ml-1 px-1.5 py-0.5 bg-white/20 dark:bg-surface-900/20 rounded-full text-[10px]">{counts.archived}</span>}
           </button>
         </div>
 
@@ -181,7 +235,8 @@ export const AdminOrders = () => {
           <div className="text-center py-20 text-surface-400 dark:text-surface-500 text-sm">
             {activeTab === 'new' && 'Новых заказов нет'}
             {activeTab === 'pending' && 'Нет заказов в обработке'}
-            {activeTab === 'history' && 'История заказов пуста'}
+            {activeTab === 'history' && 'Нет завершённых заказов'}
+            {activeTab === 'archived' && 'Архив пуст'}
           </div>
         ) : (
           <div className="flex flex-col gap-3">
@@ -217,7 +272,7 @@ export const AdminOrders = () => {
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2">
-                          <StatusBadge status={order.status ?? 'new'} />
+                          <StatusBadge status={order.status ?? 'new'} archived={order.visible_to_client === false} />
 
                           <select
                             value={order.status ?? 'new'}
@@ -240,6 +295,15 @@ export const AdminOrders = () => {
                               {order.delivery_type}
                             </span>
                           )}
+                          {order.visible_to_client === false && (
+                            <span className="text-xs px-2.5 py-1 rounded-full bg-surface-200 dark:bg-surface-600 text-surface-500 dark:text-surface-400 font-medium flex items-center gap-1">
+                              <EyeOff className="w-3 h-3" />
+                              Скрыт от клиента
+                            </span>
+                          )}
+                          <span className="text-xs px-2.5 py-1 rounded-full bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400 font-mono">
+                            TG: {order.telegram_user_id}
+                          </span>
 
                           {history.length > 0 && (
                             <button

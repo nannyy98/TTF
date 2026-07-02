@@ -169,41 +169,29 @@ Deno.serve(async (req: Request) => {
 
       case "updateOrderStatus": {
         if (!id) throw new Error("ID required");
-        const { status, changed_by } = data;
-        const { data: order, error: fetchErr } = await supabase
-          .from("orders")
-          .select("status_history, telegram_user_id")
-          .eq("id", id)
-          .maybeSingle();
-        if (fetchErr) throw fetchErr;
+        const { status, changed_by, note } = data;
 
-        const history = Array.isArray(order?.status_history) ? order.status_history : [];
-        const newEntry = {
-          status,
-          changed_at: new Date().toISOString(),
-          changed_by: changed_by || "Admin",
-        };
+        // Use RPC function which handles auto-archiving
+        const { data: updatedOrder, error: rpcErr } = await supabase.rpc("append_order_status", {
+          p_order_id: id,
+          p_status: status,
+          p_changed_by: changed_by || "Admin",
+          p_note: note || null,
+        }).maybeSingle();
 
-        const { data: updatedOrder, error: updateErr } = await supabase
-          .from("orders")
-          .update({
-            status,
-            status_history: [...history, newEntry],
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", id)
-          .select()
-          .single();
-        if (updateErr) throw updateErr;
+        if (rpcErr) throw rpcErr;
 
-        if (order?.telegram_user_id) {
+        // Get telegram_user_id from result for notification
+        const telegramUserId = updatedOrder?.telegram_user_id;
+
+        if (telegramUserId) {
           const STATUS_LABELS: Record<string, string> = {
             new: "Новый", processing: "В обработке", assembling: "В сборке",
             assembled: "Собран", shipping: "В доставке", delivered: "Доставлен",
             cancelled: "Отменён", return_requested: "Возврат", returned: "Возвращён",
           };
           await supabase.from("notifications").insert({
-            telegram_user_id: order.telegram_user_id,
+            telegram_user_id: telegramUserId,
             type: `order_${status}`,
             title: `Заказ #${id.slice(0, 8).toUpperCase()}`,
             body: `Статус изменён: ${STATUS_LABELS[status] || status}`,

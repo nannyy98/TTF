@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Plus, Pencil, Trash2, X, AlertCircle, Shield, Users, Send, MessageCircle, Package, ChevronDown, ChevronRight, ChevronLeft, Search } from 'lucide-react';
+import { ArrowLeft, Plus, Pencil, Trash2, X, AlertCircle, Shield, Users, Send, MessageCircle, Package, ChevronDown, ChevronRight, ChevronLeft, Search, RotateCcw } from 'lucide-react';
 import { hashSync } from 'bcryptjs';
 import { supabase } from '../../lib/supabase';
 import { getCurrentAdmin, AdminRole, ROLE_LABELS } from '../../lib/auth';
 import { formatPrice } from '../../lib/utils';
 import { auditLogQueries } from '../../lib/supabase/queries';
-import type { OrderItem, CustomerInfo } from '../../lib/supabase';
+import type { OrderItem, CustomerInfo, Return } from '../../lib/supabase';
 import { adminQueries } from '../../lib/adminApi';
 
 interface AdminAccount {
@@ -79,7 +79,8 @@ export const AdminUsers = () => {
 
   // Order history
   const [ordersModal, setOrdersModal] = useState<{ telegramId: number; firstName: string } | null>(null);
-  const [userOrders, setUserOrders] = useState<Database['public']['Tables']['orders']['Row'][]>([]);
+  const [userOrders, setUserOrders] = useState<(Database['public']['Tables']['orders']['Row'] & { visible_to_client?: boolean; archived_at?: string | null })[]>([]);
+  const [userReturns, setUserReturns] = useState<Return[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [userSearch, setUserSearch] = useState('');
@@ -253,18 +254,40 @@ export const AdminUsers = () => {
   const fetchUserOrders = async (telegramId: number) => {
     setOrdersLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('telegram_user_id', telegramId)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      setUserOrders(data ?? []);
+      const [ordersRes, returnsRes] = await Promise.all([
+        supabase
+          .from('orders')
+          .select('*')
+          .eq('telegram_user_id', telegramId)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('returns')
+          .select('*')
+          .eq('telegram_user_id', telegramId)
+          .order('created_at', { ascending: false })
+      ]);
+      if (ordersRes.error) throw ordersRes.error;
+      setUserOrders(ordersRes.data ?? []);
+      setUserReturns(returnsRes.data ?? []);
     } catch {
       setError('Не удалось загрузить заказы');
       setTimeout(() => setError(''), 3000);
     } finally {
       setOrdersLoading(false);
+    }
+  };
+
+  const fetchUserReturns = async (telegramId: number) => {
+    try {
+      const { data, error } = await supabase
+        .from('returns')
+        .select('*')
+        .eq('telegram_user_id', telegramId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    } catch {
+      return [];
     }
   };
 
@@ -449,25 +472,51 @@ export const AdminUsers = () => {
 
       {ordersModal && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-surface-800 rounded-2xl w-full max-w-2xl max-h-[80vh] shadow-2xl border border-surface-200 dark:border-surface-700 flex flex-col">
+          <div className="bg-white dark:bg-surface-800 rounded-2xl w-full max-w-2xl max-h-[85vh] shadow-2xl border border-surface-200 dark:border-surface-700 flex flex-col">
             <div className="flex items-center justify-between px-6 py-5 border-b border-surface-100 dark:border-surface-700 flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-surface-900 flex items-center justify-center">
                   <Package className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-surface-900 dark:text-white">История заказов</h2>
+                  <h2 className="text-lg font-bold text-surface-900 dark:text-white">Карточка клиента</h2>
                   <p className="text-xs text-surface-500 dark:text-surface-400">
-                    {ordersModal.firstName} · ID: {ordersModal.telegramId}
+                    {ordersModal.firstName} · Telegram ID: {ordersModal.telegramId}
                   </p>
                 </div>
               </div>
               <button
-                onClick={() => { setOrdersModal(null); setUserOrders([]); setExpandedOrderId(null); }}
+                onClick={() => { setOrdersModal(null); setUserOrders([]); setUserReturns([]); setExpandedOrderId(null); }}
                 className="p-1.5 rounded-lg text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-700 transition"
               >
                 <X className="w-5 h-5" />
               </button>
+            </div>
+
+            {/* Stats summary */}
+            <div className="px-6 py-4 border-b border-surface-100 dark:border-surface-700 bg-surface-50 dark:bg-surface-700/30 flex-shrink-0">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div>
+                  <p className="text-xs text-surface-500 dark:text-surface-400">Всего заказов</p>
+                  <p className="text-xl font-bold text-surface-900 dark:text-white">{userOrders.length}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-surface-500 dark:text-surface-400">Общая сумма</p>
+                  <p className="text-xl font-bold text-surface-900 dark:text-white">
+                    {formatPrice(userOrders.reduce((sum, o) => sum + Number(o.total_amount), 0))}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-surface-500 dark:text-surface-400">Возвратов</p>
+                  <p className="text-xl font-bold text-surface-900 dark:text-white">{userReturns.length}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-surface-500 dark:text-surface-400">Отмен</p>
+                  <p className="text-xl font-bold text-surface-900 dark:text-white">
+                    {userOrders.filter(o => o.status === 'cancelled').length}
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 py-4">
@@ -482,11 +531,15 @@ export const AdminUsers = () => {
                 </div>
               ) : (
                 <div className="space-y-3">
+                  <p className="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wide">
+                    Полная история заказов (включая скрытые)
+                  </p>
                   {userOrders.map((order) => {
                     const isExpanded = expandedOrderId === order.id;
                     const items = Array.isArray(order.items) ? order.items : [];
+                    const isHidden = order.visible_to_client === false;
                     return (
-                      <div key={order.id} className="bg-surface-50 dark:bg-surface-700/50 rounded-xl border border-surface-200 dark:border-surface-600 overflow-hidden">
+                      <div key={order.id} className={`bg-surface-50 dark:bg-surface-700/50 rounded-xl border ${isHidden ? 'border-orange-200 dark:border-orange-800' : 'border-surface-200 dark:border-surface-600'} overflow-hidden`}>
                         <button
                           onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
                           className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-surface-100 dark:hover:bg-surface-700 transition"
@@ -498,10 +551,16 @@ export const AdminUsers = () => {
                             <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                               order.status === 'delivered' ? 'bg-green-100 text-green-700' :
                               order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                              order.status === 'returned' ? 'bg-orange-100 text-orange-700' :
                               'bg-surface-200 text-surface-700'
                             }`}>
                               {order.status}
                             </span>
+                            {isHidden && (
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300">
+                                Скрыт
+                              </span>
+                            )}
                           </div>
                           <div className="flex items-center gap-3">
                             <span className="text-sm font-bold text-surface-900 dark:text-white">
@@ -548,6 +607,40 @@ export const AdminUsers = () => {
                       </div>
                     );
                   })}
+
+                  {userReturns.length > 0 && (
+                    <>
+                      <p className="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wide pt-4">
+                        Заявки на возврат
+                      </p>
+                      {userReturns.map((ret) => (
+                        <div key={ret.id} className="bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-200 dark:border-orange-800 p-4">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="text-sm font-semibold text-surface-900 dark:text-white">
+                                Заказ #{ret.order_id.slice(0, 8).toUpperCase()}
+                              </p>
+                              <p className="text-xs text-surface-500 dark:text-surface-400 mt-1">{ret.reason}</p>
+                            </div>
+                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                              ret.status === 'refunded' ? 'bg-green-100 text-green-700' :
+                              ret.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                              ret.status === 'approved' ? 'bg-blue-100 text-blue-700' :
+                              'bg-surface-100 text-surface-700'
+                            }`}>
+                              {ret.status === 'pending' ? 'На рассмотрении' :
+                               ret.status === 'approved' ? 'Одобрен' :
+                               ret.status === 'rejected' ? 'Отклонён' :
+                               ret.status === 'refunded' ? 'Возвращён' : ret.status}
+                            </span>
+                          </div>
+                          <p className="text-xs text-surface-400 mt-2">
+                            {new Date(ret.created_at).toLocaleDateString('ru-RU')}
+                          </p>
+                        </div>
+                      ))}
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -782,10 +875,10 @@ export const AdminUsers = () => {
                               setOrdersModal({ telegramId: u.telegram_id, firstName: u.first_name });
                               fetchUserOrders(u.telegram_id);
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 text-xs font-medium transition"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-900 dark:bg-white hover:bg-surface-800 dark:hover:bg-surface-100 text-white dark:text-surface-900 text-xs font-medium transition"
                           >
                             <Package className="w-3 h-3" />
-                            Заказы
+                            История
                           </button>
                           <button
                             onClick={() => setMessageModal({ telegramId: u.telegram_id, firstName: u.first_name })}
