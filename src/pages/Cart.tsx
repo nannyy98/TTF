@@ -1,11 +1,20 @@
-import { useState } from 'react';
-import { Trash2, Minus, Plus, ShoppingBag, Lock, ArrowLeft } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Trash2, Minus, Plus, ShoppingBag, Lock, ArrowLeft, AlertTriangle, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { useTranslation } from '../hooks/useTranslation';
 import { useCartStore } from '../store/useCartStore';
+import { supabase } from '../lib/supabase';
 import { formatPrice, getLocalizedValue } from '../lib/utils';
 import { haptic } from '../lib/telegram';
+import { toast } from '../components/Toast';
+
+interface ProductStock {
+  id: string;
+  stock: number;
+  is_active: boolean;
+  name: { ru: string; uz: string };
+}
 
 export const Cart = () => {
   const { t, language } = useTranslation();
@@ -13,13 +22,79 @@ export const Cart = () => {
   const items = useCartStore((state) => state.items);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
-  const getTotalPrice = useCartStore((state) => state.getTotalPrice);
   const getTotalItems = useCartStore((state) => state.getTotalItems);
+  const getTotalPrice = useCartStore((state) => state.getTotalPrice);
+
+  const [stockData, setStockData] = useState<Record<string, ProductStock>>({});
+  const [loading, setLoading] = useState(true);
+  const [stockErrors, setStockErrors] = useState<Record<string, string>>({});
   const [confirmRemove, setConfirmRemove] = useState<{ productId: string; size?: string; colorHex?: string } | null>(null);
 
-  const handleRemove = (productId: string, size?: string, colorHex?: string) => {
-    setConfirmRemove({ productId, size, colorHex });
-  };
+  // Load stock data for all cart items
+  useEffect(() => {
+    const loadStock = async () => {
+      if (items.length === 0) {
+        setLoading(false);
+        return;
+      }
+
+      const productIds = items.map((item) => item.productId);
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, stock, is_active, name')
+        .in('id', productIds);
+
+      if (!error && data) {
+        const map: Record<string, ProductStock> = {};
+        data.forEach((p) => {
+          map[p.id] = p as ProductStock;
+        });
+        setStockData(map);
+      }
+      setLoading(false);
+    };
+
+    loadStock();
+  }, [items]);
+
+  // Validate stock when items or stock data changes
+  useEffect(() => {
+    const errors: Record<string, string> = {};
+    items.forEach((item) => {
+      const product = stockData[item.productId];
+      if (product) {
+        if (!product.is_active) {
+          errors[item.productId] = language === 'ru' ? 'Товар недоступен' : "Mahsulot mavjud emas";
+        } else if (product.stock < item.quantity) {
+          if (product.stock <= 0) {
+            errors[item.productId] = language === 'ru' ? 'Нет в наличии' : "Mavjud emas";
+          } else {
+            errors[item.productId] = language === 'ru'
+              ? `Доступно: ${product.stock} шт.`
+              : `Mavjud: ${product.stock} ta`;
+          }
+        }
+      }
+    });
+    setStockErrors(errors);
+  }, [items, stockData, language]);
+
+  const handleUpdateQty = useCallback((productId: string, currentQty: number, newQty: number, size?: string, color?: { name: string; hex: string }) => {
+    if (newQty < 1) {
+      setConfirmRemove({ productId, size, colorHex: color?.hex });
+      return;
+    }
+
+    const product = stockData[productId];
+    if (product && newQty > product.stock) {
+      haptic.error();
+      toast.error(language === 'ru' ? `Максимум: ${product.stock} шт.` : `Maksimal: ${product.stock} ta`);
+      return;
+    }
+
+    updateQuantity(productId, newQty, size, color?.hex);
+    haptic.selection();
+  }, [stockData, updateQuantity, language]);
 
   const confirmRemoveItem = () => {
     if (confirmRemove) {
@@ -29,16 +104,9 @@ export const Cart = () => {
     }
   };
 
-  const handleUpdateQty = (productId: string, newQty: number, size?: string, color?: { name: string; hex: string }) => {
-    if (newQty < 1) {
-      handleRemove(productId, size, color?.hex);
-      return;
-    }
-    updateQuantity(productId, newQty, size, color?.hex);
-  };
-
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
+  const hasErrors = Object.keys(stockErrors).length > 0;
 
   if (items.length === 0) {
     return (
@@ -87,20 +155,41 @@ export const Cart = () => {
           </div>
         </div>
 
+        {/* Stock warning */}
+        {hasErrors && (
+          <div className="mx-3 mt-3 p-3 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+              <div className="text-xs text-orange-700 dark:text-orange-300">
+                <p className="font-semibold mb-0.5">
+                  {language === 'ru' ? 'Недостаточно товаров' : "Mahsulotlar yetarli emas"}
+                </p>
+                <p>{language === 'ru' ? 'Уменьшите количество для оформления' : "Buyurtma berish uchun miqdorni kamaytiring"}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Items */}
         <div className="px-3 pt-3 space-y-2.5">
           {items.map((item) => {
             const itemTotal = item.price * item.quantity;
+            const stockError = stockErrors[item.productId];
+            const product = stockData[item.productId];
+            const maxQty = product?.stock ?? 999;
+
             return (
               <div
                 key={`${item.productId}-${item.size ?? ''}-${item.color?.hex ?? ''}`}
-                className="bg-white dark:bg-surface-800 rounded-2xl p-3 shadow-sm border border-surface-100 dark:border-surface-700"
+                className={`bg-white dark:bg-surface-800 rounded-2xl p-3 shadow-sm border ${
+                  stockError ? 'border-orange-300 dark:border-orange-700' : 'border-surface-100 dark:border-surface-700'
+                }`}
               >
                 <div className="flex gap-3">
-          {/* Image */}
-          <div
-            className="w-20 h-20 bg-surface-100 dark:bg-surface-700 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer"
-          >
+                  {/* Image */}
+                  <div
+                    className="w-20 h-20 bg-surface-100 dark:bg-surface-700 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer"
+                  >
                     {item.image ? (
                       <img
                         src={item.image}
@@ -110,7 +199,7 @@ export const Cart = () => {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-surface-300">
-                        <ShoppingBag className="w-6 h-6" />
+                        <Package className="w-6 h-6" />
                       </div>
                     )}
                   </div>
@@ -139,6 +228,21 @@ export const Cart = () => {
                       )}
                     </div>
 
+                    {/* Stock error */}
+                    {stockError && (
+                      <p className="text-xs text-orange-600 dark:text-orange-400 mt-1.5 flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3" />
+                        {stockError}
+                      </p>
+                    )}
+
+                    {/* Available stock info */}
+                    {product && product.stock > 0 && product.stock <= 5 && !stockError && (
+                      <p className="text-xs text-surface-400 dark:text-surface-500 mt-1">
+                        {language === 'ru' ? `Осталось: ${product.stock} шт.` : `Qoldi: ${product.stock} ta`}
+                      </p>
+                    )}
+
                     {/* Price + Quantity */}
                     <div className="flex items-center justify-between mt-2.5">
                       <p className="text-sm font-bold text-surface-900 dark:text-white">
@@ -152,7 +256,7 @@ export const Cart = () => {
 
                       <div className="flex items-center gap-1.5">
                         <button
-                          onClick={() => handleUpdateQty(item.productId, item.quantity - 1, item.size, item.color)}
+                          onClick={() => handleUpdateQty(item.productId, item.quantity, item.quantity - 1, item.size, item.color)}
                           className="w-10 h-10 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center active:scale-90 transition disabled:opacity-30"
                           disabled={item.quantity <= 1}
                         >
@@ -162,13 +266,14 @@ export const Cart = () => {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => handleUpdateQty(item.productId, item.quantity + 1, item.size, item.color)}
-                          className="w-10 h-10 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center active:scale-90 transition"
+                          onClick={() => handleUpdateQty(item.productId, item.quantity, item.quantity + 1, item.size, item.color)}
+                          className="w-10 h-10 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center active:scale-90 transition disabled:opacity-30"
+                          disabled={item.quantity >= maxQty}
                         >
                           <Plus className="w-4 h-4 text-surface-600 dark:text-surface-300" />
                         </button>
                         <button
-                          onClick={() => handleRemove(item.productId, item.size, item.color?.hex)}
+                          onClick={() => setConfirmRemove({ productId: item.productId, size: item.size, colorHex: item.color?.hex })}
                           className="w-10 h-10 rounded-lg flex items-center justify-center ml-1 text-surface-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-90 transition"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -206,9 +311,12 @@ export const Cart = () => {
           {/* Checkout button */}
           <button
             onClick={() => navigate('/checkout')}
-            className="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-[0.98] text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
+            disabled={hasErrors || loading}
+            className="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
           >
-            {language === 'ru' ? 'Оформить заказ' : 'Buyurtma berish'}
+            {hasErrors
+              ? (language === 'ru' ? 'Исправьте ошибки' : "Xatolarni tuzating")
+              : (language === 'ru' ? 'Оформить заказ' : 'Buyurtma berish')}
           </button>
 
           <div className="flex items-center justify-center gap-1.5 mt-2">

@@ -171,7 +171,7 @@ Deno.serve(async (req: Request) => {
         if (!id) throw new Error("ID required");
         const { status, changed_by, note } = data;
 
-        // Use RPC function which handles auto-archiving
+        // Use RPC function which handles auto-archiving and stock return
         const { data: updatedOrder, error: rpcErr } = await supabase.rpc("append_order_status", {
           p_order_id: id,
           p_status: status,
@@ -187,16 +187,49 @@ Deno.serve(async (req: Request) => {
         if (telegramUserId) {
           const STATUS_LABELS: Record<string, string> = {
             new: "Новый", processing: "В обработке", assembling: "В сборке",
-            assembled: "Собран", shipping: "В доставке", delivered: "Доставлен",
-            cancelled: "Отменён", return_requested: "Возврат", returned: "Возвращён",
+            assembled: "Собран", shipping: "В пути", delivered: "Доставлен",
+            cancelled: "Отменён", return_requested: "Запрос возврата", returned: "Возвращён",
           };
+
+          const STATUS_MESSAGES: Record<string, string> = {
+            new: "Ваш заказ принят!",
+            processing: "Заказ обрабатывается",
+            assembling: "Заказ собирается",
+            assembled: "Заказ собран",
+            shipping: "Заказ в пути к вам",
+            delivered: "Заказ доставлен! Спасибо за покупку!",
+            cancelled: "Заказ отменён",
+            return_requested: "Запрос на возврат получен",
+            returned: "Возврат оформлен",
+          };
+
+          // In-app notification
           await supabase.from("notifications").insert({
             telegram_user_id: telegramUserId,
             type: `order_${status}`,
-            title: `Заказ #${id.slice(0, 8).toUpperCase()}`,
-            body: `Статус изменён: ${STATUS_LABELS[status] || status}`,
+            title: `📦 Заказ #${id.slice(0, 8).toUpperCase()}`,
+            body: STATUS_MESSAGES[status] || `Статус: ${STATUS_LABELS[status] || status}`,
             data: { order_id: id, status },
           }).catch(() => {});
+
+          // Telegram bot notification
+          const botToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
+          if (botToken) {
+            const emoji = status === "delivered" ? "✅" : status === "cancelled" ? "❌" : status === "shipping" ? "🚚" : "📦";
+            const text = `${emoji} <b>${STATUS_MESSAGES[status] || STATUS_LABELS[status]}</b>\n\n` +
+              `Заказ #${id.slice(0, 8).toUpperCase()}\n` +
+              `Статус: <b>${STATUS_LABELS[status] || status}</b>`;
+
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                chat_id: telegramUserId,
+                text: text,
+                parse_mode: "HTML",
+              }),
+            }).catch(() => {});
+          }
         }
 
         result = updatedOrder;
