@@ -78,7 +78,7 @@ export const AdminDashboard = () => {
 
   const loadPendingCounts = useCallback(async () => {
     const [ordersRes, reviewsRes, returnsRes] = await Promise.all([
-      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'new'),
       supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('is_approved', false),
       supabase.from('returns').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
     ]);
